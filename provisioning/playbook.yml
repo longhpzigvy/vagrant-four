@@ -1,0 +1,44 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+
+    - name: enable https apt functionality
+      apt: name=apt-transport-https update_cache=yes
+
+    - name: install pycurl package in order to use the apt_repository module
+      apt: pkg=python-pycurl state=present
+
+    - name: add nodesource key to apt
+      apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+    - name: add nodesource repo to apt
+      apt_repository: repo="{{ item }}"
+      with_items:
+        - deb https://deb.nodesource.com/node {{ ansible_lsb.codename }} main
+        - deb-src https://deb.nodesource.com/node {{ ansible_lsb.codename }} main
+
+    - name: install packages from apt
+      apt: name={{ item }}
+      with_items:
+        - libjpeg-dev
+        - libfontconfig
+        - postgresql-9.5
+        - postgresql-server-dev-all
+        - python3-dev
+        - python3-psycopg2
+        - python3-pip
+        - nodejs
+        - git
+        - npm
+
+
+- hosts: all
+  sudo: yes
+  sudo_user: postgres
+  tasks:
+    - name: create database vagrant
+      postgresql_db: name=vagrant
+
+    - name: create postgres user vagrant with access to vagrant
+      postgresql_user: db=vagrant name=vagrant role_attr_flags=CREATEDB
