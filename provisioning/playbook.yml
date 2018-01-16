@@ -18,16 +18,29 @@
         - deb https://deb.nodesource.com/node {{ ansible_lsb.codename }} main
         - deb-src https://deb.nodesource.com/node {{ ansible_lsb.codename }} main
 
+    - name: Add an Apt signing key for postgrsql 9.6
+      apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        state: present
+
+    - name: Add Postgresql 9.6 repo to apt
+      apt_repository:
+        repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
+        state: present
+
     - name: install packages from apt
       apt: name={{ item }}
       with_items:
         - libjpeg-dev
         - libfontconfig
-        - postgresql-9.5
+        - libpq-dev
+        - postgresql-9.6
+        - postgresql-contrib
         - postgresql-server-dev-all
         - python3-dev
         - python3-psycopg2
         - python3-pip
+        - redis-server
         - nodejs
         - git
         - npm
@@ -42,3 +55,9 @@
 
     - name: create postgres user vagrant with access to vagrant
       postgresql_user: db=vagrant name=vagrant role_attr_flags=CREATEDB
+
+    - name: create database ubuntu
+      postgresql_db: name=ubuntu
+
+    - name: create postgres user ubuntu with access to vagrant
+      postgresql_user: db=ubuntu name=ubuntu password=ubuntu role_attr_flags=CREATEDB
