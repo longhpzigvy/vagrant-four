@@ -54,10 +54,10 @@
       postgresql_db: name=vagrant
 
     - name: create postgres user vagrant with access to vagrant
-      postgresql_user: db=vagrant name=vagrant role_attr_flags=CREATEDB
+      postgresql_user: db=vagrant name=vagrant encrypted=yes role_attr_flags=CREATEDB 
 
     - name: create database ubuntu
       postgresql_db: name=ubuntu
 
     - name: create postgres user ubuntu with access to vagrant
-      postgresql_user: db=ubuntu name=ubuntu password=ubuntu role_attr_flags=CREATEDB
+      postgresql_user: db=ubuntu name=ubuntu password=ubuntu encrypted=yes role_attr_flags=CREATEDB
