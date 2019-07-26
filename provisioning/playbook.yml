@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  sudo: yes
+  become: true
   tasks:
 
     - name: enable https apt functionality
@@ -13,10 +13,13 @@
       apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key
 
     - name: add nodesource repo to apt
-      apt_repository: repo="{{ item }}"
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+        update_cache: yes
       with_items:
-        - deb https://deb.nodesource.com/node {{ ansible_lsb.codename }} main
-        - deb-src https://deb.nodesource.com/node {{ ansible_lsb.codename }} main
+        - deb https://deb.nodesource.com/node_10.x {{ ansible_lsb.codename }} main
+        - deb-src https://deb.nodesource.com/node_10.x {{ ansible_lsb.codename }} main
 
     - name: Add an Apt signing key for postgrsql 9.6
       apt_key:
@@ -43,12 +46,11 @@
         - redis-server
         - nodejs
         - git
-        - npm
 
 
 - hosts: all
-  sudo: yes
-  sudo_user: postgres
+  become: true
+  become_user: postgres
   tasks:
     - name: create database vagrant
       postgresql_db: name=vagrant
